@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Employer Dashboard - ProHire{% endblock %}
+
+{% block content %}
+<div class="row mb-5 animate-fade-in-up">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1 display-6">Employer Dashboard</h2>
+                <p class="text-secondary mb-0 lead fs-6">Manage your job postings and applicants.</p>
+            </div>
+            <a href="{% url 'post_job' %}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+                <i class="bi bi-plus-lg"></i> Post New Job
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="row g-4 mb-5 animate-fade-in-up delay-100">
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100 rounded-4">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center"
+                    style="width: 64px; height: 64px;">
+                    <i class="bi bi-briefcase fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-secondary text-uppercase small fw-bold mb-1 letter-spacing-1">Active Jobs</h6>
+                    <h3 class="mb-0 fw-bold display-6">{{ jobs.count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Jobs Table -->
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden animate-fade-in-up delay-200">
+    <div class="card-header bg-transparent p-4 border-bottom border-secondary border-opacity-10">
+        <h5 class="mb-0 fw-bold">Recent Job Postings</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-primary bg-opacity-10">
+                <tr>
+                    <th class="ps-4 py-3 text-secondary text-uppercase small fw-bold border-0">Job Title</th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold border-0">Posted Date</th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold border-0">Applicants</th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold border-0">Status</th>
+                    <th class="pe-4 py-3 text-end text-secondary text-uppercase small fw-bold border-0">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr class="transition-hover">
+                    <td class="ps-4 py-3 border-secondary border-opacity-10">
+                        <div class="fw-bold">{{ job.title }}</div>
+                        <div class="small text-secondary">{{ job.location }}</div>
+                    </td>
+                    <td class="py-3 text-secondary border-secondary border-opacity-10">{{ job.created_at|date:"M d, Y"
+                        }}</td>
+                    <td class="py-3 border-secondary border-opacity-10">
+                        <span
+                            class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
+                            <i class="bi bi-people me-1"></i> {{ job.application_set.count }}
+                        </span>
+                    </td>
+                    <td class="py-3 border-secondary border-opacity-10">
+                        <span
+                            class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                            {{ job.status|title }}
+                        </span>
+                    </td>
+                    <td class="pe-4 py-3 text-end border-secondary border-opacity-10">
+                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapse{{ job.id }}" aria-expanded="false">
+                            View Applicants <i class="bi bi-chevron-down ms-1"></i>
+                        </button>
+                    </td>
+                </tr>
+                <!-- Applicants Collapse Row -->
+                <tr>
+                    <td colspan="5" class="p-0 border-0">
+                        <div class="collapse bg-light bg-opacity-50" id="collapse{{ job.id }}">
+                            <div class="p-4">
+                                <h6 class="fw-bold mb-3 text-primary d-flex align-items-center">
+                                    <i class="bi bi-people-fill me-2"></i> Applicants for {{ job.title }}
+                                </h6>
+                                {% if job.application_set.all %}
+                                <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                                    <table class="table table-sm mb-0">
+                                        <thead class="bg-secondary bg-opacity-10">
+                                            <tr>
+                                                <th class="ps-3 py-2">Name</th>
+                                                <th class="py-2">Email</th>
+                                                <th class="py-2">Applied Date</th>
+                                                <th class="text-end pe-3 py-2">Resume</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for app in job.application_set.all %}
+                                            <tr>
+                                                <td class="ps-3 fw-medium py-3">{{ app.applicant.username }}</td>
+                                                <td class="text-secondary py-3">{{ app.applicant.email }}</td>
+                                                <td class="text-secondary py-3">{{ app.applied_at|date:"M d, Y" }}</td>
+                                                <td class="text-end pe-3 py-3">
+                                                    <a href="{% url 'manage_application' app.id %}"
+                                                        class="btn btn-sm btn-primary rounded-pill px-3 me-2">
+                                                        <i class="bi bi-chat-text me-1"></i> Manage
+                                                    </a>
+                                                    {% if app.applicant.userprofile.resume %}
+                                                    <a href="{{ app.applicant.userprofile.resume.url }}" target="_blank"
+                                                        class="btn btn-sm btn-light border hover-shadow-sm text-decoration-none">
+                                                        <i class="bi bi-download me-1"></i> Download
+                                                    </a>
+                                                    {% else %}
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary">No
+                                                        Resume</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-light border text-center text-muted mb-0">
+                                    No applicants received yet.
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="py-5">
+                            <div class="mb-3 text-muted opacity-25">
+                                <i class="bi bi-clipboard-plus display-1"></i>
+                            </div>
+                            <h4 class="fw-bold text-secondary">No Jobs Posted Yet</h4>
+                            <p class="text-secondary mb-4">Create your first job posting to start finding talent.</p>
+                            <a href="{% url 'post_job' %}" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
+                                <i class="bi bi-plus-lg me-2"></i> Post a Job
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .letter-spacing-1 {
+        letter-spacing: 1px;
+    }
+
+    .hover-shadow-sm:hover {
+        box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+    }
+
+    .transition-hover:hover td {
+        background-color: rgba(var(--bs-primary-rgb), 0.02);
+    }
+</style>
+{% endblock %}

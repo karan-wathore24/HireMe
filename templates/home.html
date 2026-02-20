@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ProHire - The Future of Recruitment{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center animate-fade-in-up">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill fw-semibold">
+                    #1 Recruitment Platform
+                </span>
+                <h1 class="hero-title mb-4">
+                    Find Your Dream Job or <br> Hire Text Talent
+                </h1>
+                <p class="hero-subtitle mx-auto mb-5">
+                    Connect with thousands of employers and candidates. The most efficient way to build your career or
+                    your team.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'job_list' %}" class="btn btn-primary btn-lg px-5">Browse Jobs</a>
+                    {% if user.hrprofile %}
+                    <a href="{% url 'post_job' %}" class="btn btn-outline-primary btn-lg px-5">Post a Job</a>
+                    {% else %}
+                    <a href="{% url 'users:profile' %}" class="btn btn-outline-primary btn-lg px-5">Update Profile</a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'users:register' %}" class="btn btn-primary btn-lg px-5">Get Started</a>
+                    <a href="{% url 'users:login' %}" class="btn btn-outline-primary btn-lg px-5">Sign In</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="row mt-5 pt-4 g-4 justify-content-center">
+            <div class="col-6 col-md-3">
+                <h2 class="fw-bold mb-0 text-primary">500+</h2>
+                <p class="text-secondary">Jobs Posted</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h2 class="fw-bold mb-0 text-primary">200+</h2>
+                <p class="text-secondary">Companies</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h2 class="fw-bold mb-0 text-primary">1000+</h2>
+                <p class="text-secondary">Candidates</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Jobs Section -->
+{% if recent_jobs %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Recent Jobs</h2>
+            <a href="{% url 'job_list' %}" class="btn btn-link text-decoration-none">View All <i
+                    class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for job in recent_jobs %}
+            <div class="col-md-4 animate-fade-in-up delay-{{ forloop.counter }}00">
+                <div class="card h-100 job-card border-0 shadow-sm p-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="badge badge-soft px-3 py-2 rounded-pill">{{ job.category.name|default:"General"
+                                }}</div>
+                            <small class="text-muted">{{ job.created_at|timesince }} ago</small>
+                        </div>
+                        <h4 class="card-title fw-bold mb-1">{{ job.title }}</h4>
+                        <p class="text-primary mb-3">{{ job.company }}</p>
+                        <p class="card-text text-secondary mb-3"><i class="bi bi-geo-alt me-1"></i> {{ job.location }}
+                        </p>
+                        <div class="d-grid">
+                            <a href="{% url 'apply_job' job.id %}" class="btn btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold">Welcome to Hireme</h1>
+            <p class="lead">Find your dream job or the perfect candidate.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 animate-fade-in-up delay-100">
+                <div class="card feature-card h-100 border-0 p-4">
+                    <div class="card-body">
+                        <div class="feature-icon">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Fast & Efficient</h4>
+                        <p class="text-secondary">Our AI-driven matching system connects you with the right
+                            opportunities instantly.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 animate-fade-in-up delay-200">
+                <div class="card feature-card h-100 border-0 p-4">
+                    <div class="card-body">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check-fill"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Verified Companies</h4>
+                        <p class="text-secondary">All employers are vetted to ensure a safe and reliable job hunting
+                            experience.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 animate-fade-in-up delay-300">
+                <div class="card feature-card h-100 border-0 p-4">
+                    <div class="card-body">
+                        <div class="feature-icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Career Growth</h4>
+                        <p class="text-secondary">Get insights and resources to help you advance in your career path.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="card border-0 bg-primary text-white overflow-hidden"
+            style="background: linear-gradient(135deg, var(--bs-primary) 0%, #a855f7 100%);">
+            <div class="card-body p-5 text-center">
+                <h2 class="fw-bold mb-3 display-5">Ready to start your journey?</h2>
+                <p class="lead mb-4 opacity-75">Join thousands of professionals and companies already using ProHire.</p>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'users:register' %}" class="btn btn-light text-primary btn-lg px-5 fw-bold">Sign Up
+                    Now</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %}Job Listings - ProHire{% endblock %}
+
+{% block content %}
+<div class="row mb-5 animate-fade-in-up">
+    <div class="col-lg-8 mx-auto text-center">
+        <h2 class="fw-bold mb-3 display-5">Find Your Next Opportunity</h2>
+        <p class="text-secondary lead mb-4">Browse through hundreds of active job listings.</p>
+
+        <!-- Search & Filter Section -->
+        <div class="card border-0 shadow-lg p-3 mb-5 bg-body rounded-4">
+            <div class="card-body">
+                <form method="GET" action="" class="row g-2">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0"><i
+                                    class="bi bi-search"></i></span>
+                            <input type="text" name="q" class="form-control border-start-0 ps-0"
+                                placeholder="Job title, keywords, or company" value="{{ query|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-tags"></i></span>
+                            <select name="category" class="form-select border-start-0 ps-0">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <button class="btn btn-primary fw-bold" type="submit">Search Jobs</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Jobs List -->
+<div class="row g-4">
+    {% for job in jobs %}
+    <div class="col-md-6 col-lg-4 d-flex align-items-stretch animate-fade-in-up delay-100">
+        <div class="card job-card h-100 shadow-sm border-0 w-100 position-relative transition-hover">
+            {% if job.match_score %}
+            <span class="badge bg-success position-absolute top-0 end-0 m-3 z-1" title="Based on your skills">
+                Match: {{ job.match_score }}
+            </span>
+            {% endif %}
+
+            <div class="card-body d-flex flex-column p-4">
+                <div class="d-flex align-items-start mb-4">
+                    <div class="feature-icon flex-shrink-0 me-3 bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
+                        style="width: 50px; height: 50px;">
+                        <i class="bi bi-briefcase fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1 min-width-0">
+                        <h5 class="card-title fw-bold mb-1 text-truncate" title="{{ job.title }}">{{ job.title }}</h5>
+                        <p class="text-primary mb-0 text-truncate">{{ job.company }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-light text-secondary fw-normal border">
+                            <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+                        </span>
+                        <span class="badge bg-light text-secondary fw-normal border">
+                            <i class="bi bi-cash me-1"></i>{{ job.salary }}
+                        </span>
+                        {% if job.category %}
+                        <span class="badge bg-light text-info fw-normal border border-info border-opacity-25">
+                            {{ job.category.name }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <p class="card-text text-secondary mb-4 flex-grow-1"
+                    style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ job.description }}
+                </p>
+
+                <div class="mt-auto pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>{{ job.created_at|timesince }} ago
+                        </small>
+                    </div>
+                    {% if user.is_authenticated and not user.hrprofile %}
+                    {% if job.id in applied_job_ids %}
+                    <button class="btn btn-secondary w-100" disabled>Applied</button>
+                    {% else %}
+                    <a href="{% url 'apply_job' job.id %}" class="btn btn-outline-primary w-100 fw-semibold">Apply
+                        Now</a>
+                    {% endif %}
+                    {% elif not user.is_authenticated %}
+                    <a href="{% url 'users:login' %}" class="btn btn-outline-primary w-100 fw-semibold">Login to
+                        Apply</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div class="py-5">
+            <i class="bi bi-search display-1 text-muted opacity-25 mb-3"></i>
+            <h3 class="text-secondary fw-bold">No jobs found</h3>
+            <p class="text-secondary">Try adjusting your search or filters.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .transition-hover {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
+    }
+
+    .input-group-text {
+        background-color: transparent;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--bs-primary);
+        box-shadow: none;
+    }
+</style>
+{% endblock %}

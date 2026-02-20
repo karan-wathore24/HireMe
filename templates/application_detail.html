@@ -1,0 +1,177 @@
+﻿{% extends 'base.html' %}
+{% block title %}Application Details - ProHire{% endblock %}
+
+{% block content %}
+<div class="row animate-fade-in-up">
+    <!-- Application Info Sidebar -->
+    <div class="col-lg-4 mb-4">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden sticky-lg-top" style="top: 2rem;">
+            <div class="card-header bg-transparent p-4 border-bottom border-secondary border-opacity-10">
+                <h5 class="mb-0 fw-bold">Application Details</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h6 class="text-uppercase text-secondary small fw-bold letter-spacing-1 mb-2">Job Title</h6>
+                    <h4 class="fw-bold text-primary">{{ application.job.title }}</h4>
+                    <p class="text-muted mb-0">{{ application.job.company }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-uppercase text-secondary small fw-bold letter-spacing-1 mb-2">Applicant</h6>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3 text-primary"><i class="bi bi-person"></i></div>
+                        <div>
+                            <span class="fw-bold d-block">{{ application.applicant.username }}</span>
+                            <small class="text-muted">{{ application.applicant.email }}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-uppercase text-secondary small fw-bold letter-spacing-1 mb-2">Current Status</h6>
+                    <span class="badge rounded-pill px-3 py-2 fs-6
+                        {% if application.status == 'accepted' %}bg-success bg-opacity-10 text-success border border-success border-opacity-25
+                        {% elif application.status == 'rejected' %}bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25
+                        {% elif application.status == 'shortlisted' %}bg-info bg-opacity-10 text-info border border-info border-opacity-25
+                        {% else %}bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25{% endif %}">
+                        {{ application.status|title }}
+                    </span>
+                </div>
+
+                {% if is_recruiter %}
+                <hr class="my-4 text-secondary text-opacity-25">
+                <h6 class="text-uppercase text-secondary small fw-bold letter-spacing-1 mb-3">Update Status</h6>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <select name="status" class="form-select border-secondary border-opacity-25 bg-transparent">
+                            {% for status, label in application.STATUS_CHOICES %}
+                            <option value="{{ status }}" {% if application.status == status %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-outline-primary" type="submit">Update</button>
+                    </div>
+                </form>
+                
+                <div class="d-grid mt-3">
+                    {% if application.applicant.userprofile.resume %}
+                    <a href="{{ application.applicant.userprofile.resume.url }}" target="_blank"
+                        class="btn btn-light border hover-shadow-sm bg-transparent">
+                        <i class="bi bi-file-earmark-text me-2"></i> View Resume
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversation Area -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 h-100 d-flex flex-column">
+            <div class="card-header bg-transparent p-3 border-bottom border-secondary border-opacity-10 d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                    <i class="bi bi-chat-dots-fill fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">Conversation</h5>
+                    <small class="text-muted">
+                        {% if conversation %}
+                            {{ conversation.count }} message{{ conversation.count|pluralize }}
+                        {% else %}
+                            Start a new conversation
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 overflow-auto d-flex flex-column" id="chat-container" style="height: 500px;">
+                {% if conversation %}
+                    {% for message in conversation %}
+                    <div class="d-flex mb-3 {% if message.sender == request.user %}justify-content-end{% endif %}">
+                        {% if message.sender != request.user %}
+                        <div class="me-2 d-flex align-items-end mb-1">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;" title="{{ message.sender.username }}">
+                                <span class="fw-bold small text-primary">{{ message.sender.username|slice:":1"|upper }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex flex-column {% if message.sender == request.user %}align-items-end{% else %}align-items-start{% endif %}" style="max-width: 75%;">
+                            <div class="px-3 py-2 shadow-sm 
+                                {% if message.sender == request.user %}
+                                    bg-primary text-white
+                                    style='border-radius: 18px 18px 4px 18px;'
+                                {% else %}
+                                    bg-body-secondary text-body border border-secondary border-opacity-10
+                                    style='border-radius: 18px 18px 18px 4px;'
+                                {% endif %}">
+                                <p class="mb-0" style="white-space: pre-wrap;">{{ message.content }}</p>
+                            </div>
+                            <small class="text-muted mt-1 px-1" style="font-size: 0.7rem;">
+                                {{ message.created_at|date:"g:i A" }}
+                                {% if message.sender == request.user %}<i class="bi bi-check2-all ms-1 text-primary"></i>{% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="m-auto text-center opacity-50">
+                        <div class="bg-primary bg-opacity-10 p-4 rounded-circle shadow-sm d-inline-block mb-3">
+                            <i class="bi bi-chat-heart text-primary display-4"></i>
+                        </div>
+                        <h5 class="text-secondary fw-bold">No messages yet</h5>
+                        <p class="small text-muted mb-0">
+                            {% if is_recruiter %}
+                            Send a message to start the conversation!
+                            {% else %}
+                            Wait for the recruiter to contact you.
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-footer bg-transparent p-3 border-top border-secondary border-opacity-10">
+                {% if is_recruiter or conversation %}
+                <form method="post" class="d-flex align-items-center">
+                    {% csrf_token %}
+                    <div class="flex-grow-1 position-relative me-3">
+                        <textarea name="message_content" id="message_content" rows="1" 
+                            class="form-control bg-secondary bg-opacity-10 border-0 rounded-pill px-4 py-3" 
+                            placeholder="Type a message..." style="resize: none; overflow: hidden;"
+                            oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center shadow-md hover-scale" style="width: 50px; height: 50px;">
+                        <i class="bi bi-send-fill fs-5"></i>
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-light border border-secondary border-opacity-10 d-flex align-items-center mb-0 bg-transparent" role="alert">
+                    <i class="bi bi-info-circle text-primary me-2"></i>
+                    <div class="small text-secondary">
+                        You can reply once the recruiter starts the conversation.
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .letter-spacing-1 { letter-spacing: 1px; }
+    .hover-scale { transition: transform 0.2s; }
+    .hover-scale:hover { transform: scale(1.05); }
+    #chat-container::-webkit-scrollbar { width: 6px; }
+    #chat-container::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 4px; }
+    #chat-container::-webkit-scrollbar-track { background-color: transparent; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var chatContainer = document.getElementById('chat-container');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
+</script>
+{% endblock %}

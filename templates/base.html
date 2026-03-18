@@ -35,7 +35,7 @@
                     {% if user.is_authenticated %}
                     <li class="nav-item"><span class="nav-link fw-bold">Hello, {{ user.username }}</span></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'users:profile' %}">My Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'job_list' %}">Browse Jobs</a></li>
+                    {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'job_list' %}">Browse Jobs</a></li> {% endcomment %}
                     {% if user.hrprofile %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'post_job' %}">Post a Job</a></li>
                     {% endif %}
@@ -89,7 +89,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-lg-4">
+                {% comment %} <div class="col-lg-4">
                     <h5 class="fw-bold mb-3">Subscribe to our newsletter</h5>
                     <form>
                         <div class="d-flex gap-2">
@@ -97,7 +97,7 @@
                             <button class="btn btn-primary" type="button">Subscribe</button>
                         </div>
                     </form>
-                </div>
+                </div> {% endcomment %}
             </div>
             <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
                 <p class="text-secondary mb-0">&copy; 2024 Hireme, Inc. All rights reserved.</p>

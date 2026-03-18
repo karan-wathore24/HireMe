@@ -68,8 +68,8 @@
                 <div class="card h-100 job-card border-0 shadow-sm p-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="badge badge-soft px-3 py-2 rounded-pill">{{ job.category.name|default:"General"
-                                }}</div>
+                            {% comment %} <div class="badge badge-soft px-3 py-2 rounded-pill">{{ job.category.name|default:"General"
+                                }}</div> {% endcomment %}
                             <small class="text-muted">{{ job.created_at|timesince }} ago</small>
                         </div>
                         <h4 class="card-title fw-bold mb-1">{{ job.title }}</h4>
@@ -88,7 +88,7 @@
 </section>
 {% endif %}
 
-<!-- Features Section -->
+{% comment %} <!-- Features Section -->
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
@@ -134,7 +134,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> {% endcomment %}
 
 <!-- Call to Action -->
 <section class="py-5 my-5">

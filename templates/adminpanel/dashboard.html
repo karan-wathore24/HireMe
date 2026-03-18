@@ -1,62 +1,99 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Admin Analytics - ProHire{% endblock %}
+{% block title %}Admin Dashboard - Hireme{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
+<div class="row mb-5 animate-fade-in-up">
     <div class="col-12">
-        <h2>Platform Analytics</h2>
-        <p class="text-muted">Overview of platform performance and user activity.</p>
-    </div>
-</div>
-
-<div class="row g-4">
-    <!-- User Stats -->
-    <div class="col-md-3">
-        <div class="card h-100 border-primary shadow-sm">
-            <div class="card-body text-center">
-                <h1 class="display-4 text-primary">{{ total_seekers }}</h1>
-                <p class="card-text">Total Job Seekers</p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1 display-6">Admin Dashboard</h2>
+                <p class="text-secondary mb-0 lead fs-6">Platform analytics and management overview.</p>
             </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card h-100 border-info shadow-sm">
-            <div class="card-body text-center">
-                <h1 class="display-4 text-info">{{ total_employers }}</h1>
-                <p class="card-text">Total Employers</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Job Stats -->
-    <div class="col-md-3">
-        <div class="card h-100 border-success shadow-sm">
-            <div class="card-body text-center">
-                <h1 class="display-4 text-success">{{ active_jobs }}</h1>
-                <p class="card-text">Active Jobs</p>
-                <small class="text-muted">out of {{ total_jobs }} total</small>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card h-100 border-warning shadow-sm">
-            <div class="card-body text-center">
-                <h1 class="display-4 text-warning">{{ pending_jobs }}</h1>
-                <p class="card-text">Pending Approval</p>
-                <a href="/admin/jobs/job/" class="btn btn-sm btn-outline-warning mt-2">Manage</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Application Stats -->
-    <div class="col-md-12">
-        <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <h3 class="text-secondary">Total Applications</h3>
-                <h1 class="display-3">{{ total_applications }}</h1>
-            </div>
+            <a href="/admin/jobs/job/" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+                <i class="bi bi-plus-lg"></i> Manage Jobs
+            </a>
         </div>
     </div>
 </div>
+
+<!-- Stats Overview -->
+<div class="row g-4 mb-5 animate-fade-in-up delay-100">
+    <!-- Total Job Seekers -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 rounded-4 p-4">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                    <i class="bi bi-person-lines-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-secondary text-uppercase small fw-bold mb-1 letter-spacing-1">Job Seekers</h6>
+                    <h3 class="mb-0 fw-bold display-6">{{ total_seekers }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Total Employers -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 rounded-4 p-4">
+            <div class="d-flex align-items-center">
+                <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                    <i class="bi bi-building fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-secondary text-uppercase small fw-bold mb-1 letter-spacing-1">Employers</h6>
+                    <h3 class="mb-0 fw-bold display-6">{{ total_employers }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Active Jobs -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 rounded-4 p-4">
+            <div class="d-flex align-items-center">
+                <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                    <i class="bi bi-briefcase-check fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-secondary text-uppercase small fw-bold mb-1 letter-spacing-1">Active Jobs</h6>
+                    <h3 class="mb-0 fw-bold display-6">{{ active_jobs }}</h3>
+                    <small class="text-muted">out of {{ total_jobs }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Pending Jobs -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 rounded-4 p-4">
+            <div class="d-flex align-items-center">
+                <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                    <i class="bi bi-hourglass-split fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-secondary text-uppercase small fw-bold mb-1 letter-spacing-1">Pending</h6>
+                    <h3 class="mb-0 fw-bold display-6">{{ pending_jobs }}</h3>
+                    <a href="/admin/jobs/job/" class="btn btn-sm btn-outline-warning mt-1">Manage</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Total Applications -->
+<div class="row mb-5 animate-fade-in-up delay-200">
+    <div class="col-12">
+        <div class="card border-0 shadow-lg rounded-4 text-center p-5">
+            <h3 class="text-secondary mb-3">Total Applications</h3>
+            <h1 class="display-3 fw-bold mb-0">{{ total_applications }}</h1>
+        </div>
+    </div>
+</div>
+
+<style>
+.letter-spacing-1 {
+    letter-spacing: 1px;
+}
+</style>
 {% endblock %}
+
